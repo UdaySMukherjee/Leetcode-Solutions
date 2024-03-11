@@ -7,4 +7,4 @@ class Solution:
             i+=1
         print(d)
 
-        return "".join(sorted(s, key= order.find))
+        return "".join(sorted(s, key= lambda x:d[x]))

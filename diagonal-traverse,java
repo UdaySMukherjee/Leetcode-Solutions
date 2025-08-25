@@ -1,0 +1,82 @@
+class Solution { 
+    public int[] findDiagonalOrder(int[][] mat) {
+        // Get the dimensions of our map (matrix). These are our boundaries.
+        int rows = mat.length, cols = mat[0].length;
+        // Calculate the total number of treasures on the map.
+        int n = rows * cols;
+        // This is our "treasure bag" - an array to store the treasures in the order we find them.
+        int[] arr = new int[n];
+        
+        // Initialize our hunter's starting position: top-left corner.
+        int r = 0, c = 0; // 'r' for row, 'c' for column.
+        // This is our "compass" – tells us which way to move: true means "up-right", false means "down-left".
+        boolean up = true;
+        // This is our "item counter" for the treasure bag.
+        int index = 0;
+
+        // --- Traversing the Map ---
+        
+        // We'll keep hunting until we've found all 'n' treasures.
+        for (int i = 0; i < n; i++) {
+            // Found a treasure! Let's put it in our bag.
+            arr[index++] = mat[r][c];
+
+            // --- Planning the Next Move ---
+            // These are the PREDICTED next positions based on our CURRENT direction.
+            // We calculate them first to check if they are still on the map.
+            int next_r_if_up = r - 1; // If we move up, the row index decreases.
+            int next_c_if_up = c + 1; // If we move right, the column index increases.
+            
+            int next_r_if_down = r + 1; // If we move down, the row index increases.
+            int next_c_if_down = c - 1; // If we move left, the column index decreases.
+
+            // --- Decision Time: Move or Turn? ---
+            
+            // If our current direction is UP-RIGHT ('up' is true):
+            if (up) {
+                // Can we take a step UP-RIGHT and stay on the map?
+                if (next_r_if_up >= 0 && next_c_if_up < cols) {
+                    // YES! We're still on the map. So, we actually move to that next spot.
+                    r = next_r_if_up;
+                    c = next_c_if_up;
+                } else {
+                    // NO! We hit an edge (either top or right). Time to change direction and find the start of the next diagonal!
+                    up = false; // Change direction to DOWN-LEFT.
+
+                    // Now, where do we start the next diagonal? This depends on WHICH edge we hit.
+                    if (next_c_if_up >= cols) { // Did we hit the RIGHT edge? (Column index became too large)
+                        // If we hit the right edge, the next diagonal starts one step DOWN from our current position.
+                        r++; // Move to the next row. Column 'c' stays the same for this transition.
+                    } else { // Otherwise, we must have hit the TOP edge (next_r_if_up < 0).
+                        // If we hit the top edge, the next diagonal starts one step RIGHT from our current position.
+                        c++; // Move to the next column. Row 'r' stays the same for this transition.
+                    }
+                }
+            }
+            // If our current direction is DOWN-LEFT ('up' is false):
+            else {
+                // Can we take a step DOWN-LEFT and stay on the map?
+                if (next_r_if_down < rows && next_c_if_down >= 0) {
+                    // YES! We're still on the map. So, we actually move to that next spot.
+                    r = next_r_if_down;
+                    c = next_c_if_down;
+                } else {
+                    // NO! We hit an edge (either bottom or left). Time to change direction and find the start of the next diagonal!
+                    up = true; // Change direction to UP-RIGHT.
+
+                    // Now, where do we start the next diagonal? This depends on WHICH edge we hit.
+                    if (next_r_if_down >= rows) { // Did we hit the BOTTOM edge? (Row index became too large)
+                        // If we hit the bottom edge, the next diagonal starts one step RIGHT from our current position.
+                        c++; // Move to the next column. Row 'r' stays the same for this transition.
+                    } else { // Otherwise, we must have hit the LEFT edge (next_c_if_down < 0).
+                        // If we hit the left edge, the next diagonal starts one step DOWN from our current position.
+                        r++; // Move to the next row. Column 'c' stays the same for this transition.
+                    }
+                }
+            }
+        }
+        
+        // We've collected all treasures! Hand over the bag.
+        return arr;
+    }
+}

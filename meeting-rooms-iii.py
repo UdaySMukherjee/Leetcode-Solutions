@@ -1,42 +1,28 @@
-class Solution:
-    def mostBooked(self, n: int, meetings: list[list[int]]) -> int:
-        meetings.sort()
+class Solution(object):
+    def mostBooked(self, n, meetings):
+        """
+        :type n: int
+        :type meetings: List[List[int]]
+        :rtype: int
+        """
 
-        count = [0] * n
-        timer = [0] * n
-
-        itr = 0
-
-        while itr < len(meetings):
-            start, end = meetings[itr]
-            dur = end - start
-
-            room = -1
-            earliest = 10**18
-            earliestRoom = -1
-
-            for i in range(n):
-                if timer[i] < earliest:
-                    earliest = timer[i]
-                    earliestRoom = i
-                if timer[i] <= start:
-                    room = i
-                    break
-
-            if room != -1:
-                timer[room] = end
-                count[room] += 1
+        meetings.sort( key = lambda x: x[0])
+        rooms=[i for i in range(n)]
+        freq=[0]*n
+        meets=[]
+        for i in meetings:
+            while meets and meets[0][0]<=i[0]:
+                end,room = heappop(meets)
+                heappush(rooms,room)
+            if rooms:
+                room=heappop(rooms)
+                heappush(meets,(i[1],room))
             else:
-                timer[earliestRoom] += dur
-                count[earliestRoom] += 1
-
-            itr += 1
-
-        maxv = 0
-        idx = 0
-        for i in range(n):
-            if count[i] > maxv:
-                maxv = count[i]
-                idx = i
-
-        return idx
+                end,room = heappop(meets)
+                heappush(meets,(end+(i[1]-i[0]),room))
+            freq[room]+=1
+        m=max(freq)
+        print(freq)
+        for i,j in enumerate(freq):
+            if j==m:
+                return i

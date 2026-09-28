@@ -1,0 +1,16 @@
+class Solution:
+    def maxDepth(self, s: str) -> int:
+        res = 0
+        curr = 0 
+
+        for c in s:
+            if c == '(':
+                # Entering one more level of parentheses
+                curr += 1
+                res = max(res, curr)
+
+            elif c == ')':
+                # Leaving the current level
+                curr -= 1
+
+        return res
